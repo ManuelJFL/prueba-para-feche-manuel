@@ -4,15 +4,31 @@
 <title>Ópera Prima · Manuel Javier</title>
 <style>
 html,body{margin:0;height:100%;background:#0b0b0e}
-body{display:flex;align-items:center;justify-content:center}
-.s{position:relative;height:100%;max-width:100%;aspect-ratio:9/16;background:#000}
+body{display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif}
+.s{position:relative;height:100%;max-width:100%;aspect-ratio:9/16;background:#000;overflow:hidden}
 video{width:100%;height:100%;object-fit:cover;display:block}
-button{position:absolute;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));border:0;border-radius:999px;padding:9px 14px;background:#ffffff33;color:#fff;font:600 13px system-ui,sans-serif;backdrop-filter:blur(6px)}
+.bar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:10px;padding:28px 12px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#000a);color:#fff;font-size:12px}
+.bar button{border:0;background:#ffffff2e;color:#fff;border-radius:999px;min-width:40px;height:36px;padding:0 12px;font:600 13px system-ui,sans-serif;cursor:pointer}
+.bar input{flex:1;min-width:0;accent-color:#fff;height:24px;cursor:pointer}
+.bar span{font-variant-numeric:tabular-nums;white-space:nowrap}
 </style></head><body>
 <div class="s"><video id="v" src="FECHE_web.mp4" autoplay muted loop playsinline preload="auto"></video>
-<button id="b" type="button">Activar sonido</button></div>
+<div class="bar">
+<button id="p" type="button" aria-label="Pausar">Pausa</button>
+<input id="r" type="range" min="0" max="1000" value="0" aria-label="Barra de progreso">
+<span id="t">0:00</span>
+<button id="m" type="button" aria-label="Sonido">Sonido</button>
+</div></div>
 <script>
-var v=document.getElementById('v'),b=document.getElementById('b');
-b.onclick=function(){v.muted=!v.muted;b.textContent=v.muted?'Activar sonido':'Silenciar';v.play()};
-v.onclick=function(){v.paused?v.play():v.pause()};
+var v=document.getElementById('v'),p=document.getElementById('p'),r=document.getElementById('r'),t=document.getElementById('t'),m=document.getElementById('m'),drag=false;
+function f(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)}
+function lab(){p.textContent=v.paused?'Play':'Pausa';m.textContent=v.muted?'Sonido':'Mute'}
+p.onclick=function(){v.paused?v.play():v.pause()};
+v.onclick=p.onclick;
+m.onclick=function(){v.muted=!v.muted;lab();v.play()};
+v.onplay=v.onpause=lab;
+v.ontimeupdate=function(){if(!drag&&v.duration){r.value=v.currentTime/v.duration*1000}t.textContent=f(v.currentTime)+' / '+f(v.duration)};
+r.oninput=function(){drag=true;if(v.duration){v.currentTime=r.value/1000*v.duration}};
+r.onchange=function(){drag=false};
+lab();
 </script></body></html>
