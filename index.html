@@ -11,21 +11,25 @@ video{width:100%;height:100%;object-fit:cover;display:block}
 .bar button{border:0;background:#ffffff2e;color:#fff;border-radius:999px;min-width:40px;height:36px;padding:0 12px;font:600 13px system-ui,sans-serif;cursor:pointer}
 .bar input{flex:1;min-width:0;accent-color:#fff;height:24px;cursor:pointer}
 .bar span{font-variant-numeric:tabular-nums;white-space:nowrap}
+.big{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border:0;border-radius:50%;background:#ffffffe6;color:#0b0b0e;font-size:34px;padding-left:6px;cursor:pointer;box-shadow:0 6px 24px #0008}
+.big[hidden]{display:none}
 </style></head><body>
-<div class="s"><video id="v" src="FECHE_web.mp4" autoplay muted loop playsinline preload="auto"></video>
+<div class="s"><video id="v" src="FECHE_web.mp4#t=0.1" loop playsinline preload="metadata"></video>
+<button id="g" class="big" type="button" aria-label="Reproducir">&#9654;</button>
 <div class="bar">
-<button id="p" type="button" aria-label="Pausar">Pausa</button>
+<button id="p" type="button" aria-label="Pausar">Play</button>
 <input id="r" type="range" min="0" max="1000" value="0" aria-label="Barra de progreso">
 <span id="t">0:00</span>
-<button id="m" type="button" aria-label="Sonido">Sonido</button>
+<button id="m" type="button" aria-label="Sonido">Mute</button>
 </div></div>
 <script>
-var v=document.getElementById('v'),p=document.getElementById('p'),r=document.getElementById('r'),t=document.getElementById('t'),m=document.getElementById('m'),drag=false;
+var v=document.getElementById('v'),p=document.getElementById('p'),r=document.getElementById('r'),t=document.getElementById('t'),m=document.getElementById('m'),g=document.getElementById('g'),drag=false;
 function f(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)}
 function lab(){p.textContent=v.paused?'Play':'Pausa';m.textContent=v.muted?'Sonido':'Mute'}
-p.onclick=function(){v.paused?v.play():v.pause()};
-v.onclick=p.onclick;
-m.onclick=function(){v.muted=!v.muted;lab();v.play()};
+g.onclick=function(){v.muted=false;g.hidden=true;v.play();lab()};
+p.onclick=function(){if(v.paused){g.hidden=true;v.play()}else{v.pause()}};
+v.onclick=function(){if(!g.hidden){g.onclick()}else{p.onclick()}};
+m.onclick=function(){v.muted=!v.muted;lab()};
 v.onplay=v.onpause=lab;
 v.ontimeupdate=function(){if(!drag&&v.duration){r.value=v.currentTime/v.duration*1000}t.textContent=f(v.currentTime)+' / '+f(v.duration)};
 r.oninput=function(){drag=true;if(v.duration){v.currentTime=r.value/1000*v.duration}};
